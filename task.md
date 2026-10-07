@@ -7,6 +7,8 @@ How to use
 - Definition of done for every task: code reviewed, lint/type-check clean, related tests green, spec/test-case updated if behaviour changed.
 - Requirement-to-task mapping is in `traceability.md` (generated from the `REQ-xxx` tags below).
 
+Progress note: items ticked `[x]` are the **frontend** tasks, implemented in `frontend/` against a mock API layer (`frontend/src/services`, data in localStorage). They still need re-pointing to the real backend when it exists. Frontend automated tests (AUTH-T16, TKT-T26, WF-T22, CMT-T13, DSH-T12) are not written yet.
+
 ---
 
 ## 0. Foundation (cross-cutting)
@@ -23,8 +25,8 @@ How to use
 - [ ] **FND-T10** Build test harness: test DB lifecycle, data factories, API client helper, Playwright config — REQ-063
 - [ ] **FND-T11** Create CI pipeline (lint, type-check, unit, API tests, build) — REQ-063
 - [ ] **FND-T12** Create OpenAPI skeleton and publish it from the backend — REQ-063
-- [ ] **FND-T13** Create frontend shell: router, layout, API client (token + 401 handling + error normalisation), global error boundary — REQ-064, REQ-070
-- [ ] **FND-T14** Define UI conventions: `data-testid` naming, loading/empty/error components — REQ-063, REQ-061
+- [x] **FND-T13** Create frontend shell: router, layout, API client (token + 401 handling + error normalisation), global error boundary — REQ-064, REQ-070
+- [x] **FND-T14** Define UI conventions: `data-testid` naming, loading/empty/error components — REQ-063, REQ-061
 
 ## 1. Authentication (`modules/authentication`)
 
@@ -38,9 +40,9 @@ How to use
 - [ ] **AUTH-T08** Implement `requireRole` guard (403) and current-user helper for services — REQ-002
 - [ ] **AUTH-T09** Implement login throttling / lockout if confirmed (⛔ OQ-09) — REQ-060
 - [ ] **AUTH-T10** Implement logout endpoint and/or client-side token discard if confirmed (⛔ OQ-26) — REQ-003
-- [ ] **AUTH-T11** Create Login screen (fields, inline validation, error banner) — REQ-001, REQ-070
-- [ ] **AUTH-T12** Connect Login UI to login API; store token; role-based redirect to Dashboard / Agent Dashboard — REQ-001, REQ-002, REQ-070
-- [ ] **AUTH-T13** Implement route guards (unauthenticated → Login; wrong role → forbidden) and session-expiry handling — REQ-002, REQ-003
+- [x] **AUTH-T11** Create Login screen (fields, inline validation, error banner) — REQ-001, REQ-070
+- [x] **AUTH-T12** Connect Login UI to login API; store token; role-based redirect to Dashboard / Agent Dashboard — REQ-001, REQ-002, REQ-070
+- [x] **AUTH-T13** Implement route guards (unauthenticated → Login; wrong role → forbidden) and session-expiry handling — REQ-002, REQ-003
 - [ ] **AUTH-T14** Add unit tests (hashing, token, validators) — REQ-001, REQ-060
 - [ ] **AUTH-T15** Add API tests: positive, negative, validation, security, role cases from `AUTH-TC` — REQ-001, REQ-002, REQ-003, REQ-060
 - [ ] **AUTH-T16** Add UI/E2E tests: login flows and route guards from `AUTH-TC` — REQ-001, REQ-002, REQ-070
@@ -62,13 +64,13 @@ How to use
 - [ ] **TKT-T13** Implement `PUT /api/tickets/{id}` field edit per confirmed rules (⛔ OQ-03); closed-ticket rejection is wired in `WF-T09` — REQ-017
 - [ ] **TKT-T14** Implement `DELETE /api/tickets/{id}` only if confirmed (⛔ OQ-04) — REQ-018
 - [ ] **TKT-T15** Document list/detail/create/update APIs in OpenAPI — REQ-063
-- [ ] **TKT-T16** Create Create Ticket screen (form, category dropdown, priority selector, attachment picker, inline validation) — REQ-010, REQ-011, REQ-013, REQ-070
-- [ ] **TKT-T17** Connect Create Ticket UI to API; success redirect to Ticket Details / My Tickets; prevent double submit — REQ-010, REQ-012
-- [ ] **TKT-T18** Create My Tickets / All Tickets screen (table, status/priority badges, empty state) — REQ-014, REQ-015, REQ-070
-- [ ] **TKT-T19** Add search box, filters, sort controls and pagination to list screen; sync with URL query — REQ-019
-- [ ] **TKT-T20** Create Ticket Details screen layout (fields, attachment, slots for comments/history/actions) — REQ-016, REQ-070
-- [ ] **TKT-T21** Create edit-ticket UI per confirmed rules (⛔ OQ-03) — REQ-017
-- [ ] **TKT-T22** Implement navigation between screens per client flow and role-based menu — REQ-070, REQ-002
+- [x] **TKT-T16** Create Create Ticket screen (form, category dropdown, priority selector, attachment picker, inline validation) — REQ-010, REQ-011, REQ-013, REQ-070
+- [x] **TKT-T17** Connect Create Ticket UI to API; success redirect to Ticket Details / My Tickets; prevent double submit — REQ-010, REQ-012
+- [x] **TKT-T18** Create My Tickets / All Tickets screen (table, status/priority badges, empty state) — REQ-014, REQ-015, REQ-070
+- [x] **TKT-T19** Add search box, filters, sort controls and pagination to list screen; sync with URL query — REQ-019
+- [x] **TKT-T20** Create Ticket Details screen layout (fields, attachment, slots for comments/history/actions) — REQ-016, REQ-070
+- [x] **TKT-T21** Create edit-ticket UI per confirmed rules (⛔ OQ-03) — REQ-017
+- [x] **TKT-T22** Implement navigation between screens per client flow and role-based menu — REQ-070, REQ-002
 - [ ] **TKT-T23** Apply browser/responsiveness/accessibility baseline once targets are agreed (⛔ OQ-25) — REQ-061
 - [ ] **TKT-T24** Add unit tests (validators, ticket-number generation, query builder) — REQ-011, REQ-012, REQ-019
 - [ ] **TKT-T25** Add API tests: create/validation/boundary/decision-table/role/search-filter-sort-pagination/DB cases from `TKT-TC` — REQ-010..REQ-020, REQ-063, REQ-064
@@ -88,12 +90,12 @@ How to use
 - [ ] **WF-T10** Implement `GET /api/tickets/{id}/history` (chronological; visibility per OQ-24) — REQ-038
 - [ ] **WF-T11** Expose allowed actions for the current actor/state in ticket details response (proposed; ⛔ OQ-26) — REQ-034, REQ-035
 - [ ] **WF-T12** Document assign/status/history APIs in OpenAPI — REQ-063
-- [ ] **WF-T13** Build Assign button on Ticket Details (agent, Open tickets) and wire to API — REQ-032, REQ-033
-- [ ] **WF-T14** Build Update Ticket screen for Agent (only permitted next statuses offered) and wire to API — REQ-034, REQ-070
-- [ ] **WF-T15** Build Close Ticket action for ticket owner (visible only when Resolved) and wire to API — REQ-035
-- [ ] **WF-T16** Build History section on Ticket Details (from → to, actor, time; local time per OQ-20) — REQ-038
-- [ ] **WF-T17** Disable/hide all edit controls on Closed tickets; show read-only banner — REQ-036
-- [ ] **WF-T18** Handle conflict/error responses in UI (stale state, forbidden) with refresh prompt — REQ-031, REQ-064
+- [x] **WF-T13** Build Assign button on Ticket Details (agent, Open tickets) and wire to API — REQ-032, REQ-033
+- [x] **WF-T14** Build Update Ticket screen for Agent (only permitted next statuses offered) and wire to API — REQ-034, REQ-070
+- [x] **WF-T15** Build Close Ticket action for ticket owner (visible only when Resolved) and wire to API — REQ-035
+- [x] **WF-T16** Build History section on Ticket Details (from → to, actor, time; local time per OQ-20) — REQ-038
+- [x] **WF-T17** Disable/hide all edit controls on Closed tickets; show read-only banner — REQ-036
+- [x] **WF-T18** Handle conflict/error responses in UI (stale state, forbidden) with refresh prompt — REQ-031, REQ-064
 - [ ] **WF-T19** Add API tests: state-transition, decision-table, role, closed-ticket, validation cases from `WF-TC` — REQ-030..REQ-036
 - [ ] **WF-T20** Add DB tests: history rows, atomic rollback, append-only, no row on rejected transition — REQ-037, REQ-062
 - [ ] **WF-T21** Add concurrency tests (double assign, simultaneous status updates) — REQ-032, REQ-062
@@ -107,10 +109,10 @@ How to use
 - [ ] **CMT-T04** Implement `POST /api/tickets/{id}/comments` with permission rules (owner User or any Agent) and closed-ticket block (⛔ OQ-23) — REQ-040, REQ-002, REQ-036
 - [ ] **CMT-T05** Implement `GET /api/tickets/{id}/comments` (ordering, ownership check, author name/role) — REQ-041
 - [ ] **CMT-T06** Document comments API in OpenAPI — REQ-063
-- [ ] **CMT-T07** Build comments list component (author, role, timestamp, empty state) on Ticket Details — REQ-041
-- [ ] **CMT-T08** Build add-comment form (validation, disabled while submitting, hidden/disabled for Closed) — REQ-040
-- [ ] **CMT-T09** Connect UI to APIs; refresh list after submit — REQ-040, REQ-041
-- [ ] **CMT-T10** Ensure XSS-safe rendering of comment text and preserve line breaks — REQ-060
+- [x] **CMT-T07** Build comments list component (author, role, timestamp, empty state) on Ticket Details — REQ-041
+- [x] **CMT-T08** Build add-comment form (validation, disabled while submitting, hidden/disabled for Closed) — REQ-040
+- [x] **CMT-T09** Connect UI to APIs; refresh list after submit — REQ-040, REQ-041
+- [x] **CMT-T10** Ensure XSS-safe rendering of comment text and preserve line breaks — REQ-060
 - [ ] **CMT-T11** Add unit tests (validation) — REQ-040
 - [ ] **CMT-T12** Add API tests: positive/negative/boundary/decision-table/permission/security/DB cases from `CMT-TC` — REQ-040, REQ-041, REQ-060
 - [ ] **CMT-T13** Add UI/E2E tests: add/list comments, closed ticket behaviour — REQ-040, REQ-041
@@ -122,10 +124,10 @@ How to use
 - [ ] **DSH-T03** Implement role scoping (Agent system-wide; User own tickets) (⛔ OQ-19) — REQ-050, REQ-052
 - [ ] **DSH-T04** Implement recent-tickets query (size/order per OQ-18; tie-break on id) — REQ-051
 - [ ] **DSH-T05** Implement `GET /api/dashboard` (⛔ OQ-26) and document in OpenAPI — REQ-050, REQ-051, REQ-052
-- [ ] **DSH-T06** Build Agent Dashboard screen (counts tiles + Recent Tickets list per client wireframe) — REQ-050, REQ-051, REQ-070
-- [ ] **DSH-T07** Build User Dashboard screen per confirmed content (⛔ OQ-19) — REQ-052, REQ-070
-- [ ] **DSH-T08** Connect dashboards to API; empty/zero states; recent ticket → Ticket Details navigation — REQ-051
-- [ ] **DSH-T09** Ensure counts refresh after create/status change (refetch on navigation or invalidate cache) — REQ-050
+- [x] **DSH-T06** Build Agent Dashboard screen (counts tiles + Recent Tickets list per client wireframe) — REQ-050, REQ-051, REQ-070
+- [x] **DSH-T07** Build User Dashboard screen per confirmed content (⛔ OQ-19) — REQ-052, REQ-070
+- [x] **DSH-T08** Connect dashboards to API; empty/zero states; recent ticket → Ticket Details navigation — REQ-051
+- [x] **DSH-T09** Ensure counts refresh after create/status change (refetch on navigation or invalidate cache) — REQ-050
 - [ ] **DSH-T10** Add API tests with the fixed seed dataset: counts, scoping, recent order, role cases from `DSH-TC` — REQ-050, REQ-051, REQ-052
 - [ ] **DSH-T11** Add DB cross-check tests (counts equal SQL COUNT; equal to list endpoint totals) — REQ-050
 - [ ] **DSH-T12** Add UI/E2E tests: dashboard after create/transition, navigation — REQ-050, REQ-051, REQ-070
