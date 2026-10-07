@@ -1,9 +1,9 @@
 ---
-name: architect.create
-description: Turn a client requirement into a complete, traceable documentation set before any code is written — requirement.md, modules/<module>/specification.md + test-case.md, plan.md, task.md and traceability.md. Use when the user gives a client requirement/PRD and wants it analysed, split into modules, and documented with test cases and tasks ("architect.create", "create the project docs", "analyse this requirement"). Documentation only; never writes application code.
+name: architect-create
+description: Turn a client requirement into a complete, traceable documentation set before any code is written — requirement.md, modules/<module>/specification.md + test-case.md, plan.md, task.md and traceability.md. Use when the user gives a client requirement/PRD and wants it analysed, split into modules, and documented with test cases and tasks ("architect-create", "create the project docs", "analyse this requirement"). Documentation only; never writes application code.
 ---
 
-# architect.create
+# architect-create
 
 Input: the client requirement (pasted text, or `$ARGUMENTS`). Output: a reviewed documentation set at the project root. **Do not write application code in this skill.** After the user approves the docs, implementation (frontend, backend) is a separate step that uses these files as the source of truth.
 
@@ -44,7 +44,7 @@ Rules: IDs `PFX-TC-001…` sequential and unique; the Test Scenario cell **ends 
 Small, specific, testable checkbox tasks grouped by module, ordered by dependency: a Foundation section first, then one section per module (schema → model → API → validation/security → UI → connect UI to API → unit tests → API tests → UI/E2E tests), then a Release/hardening section. Line format: `- [ ] **PFX-T01** description (⛔ OQ-xx if blocked) — REQ-001, REQ-002`. Every task carries the REQ ids it implements.
 
 ### 8. Traceability
-Run `python3 .claude/skills/architect.create/scripts/traceability.py` from the project root. It writes `traceability.md` (REQ → module → spec FR → test cases → tasks) and exits non-zero if any REQ lacks an owning FR, a test case or a task — fix gaps before finishing. Regenerate whenever any document changes.
+Run `python3 .claude/skills/architect-create/scripts/traceability.py` from the project root. It writes `traceability.md` (REQ → module → spec FR → test cases → tasks) and exits non-zero if any REQ lacks an owning FR, a test case or a task — fix gaps before finishing. Regenerate whenever any document changes.
 
 ### 9. Consolidate and verify
 - Collect the new open questions surfaced while writing module docs and add them to `requirement.md` §20 (give them the next free `OQ` numbers and make the module docs use the same numbers).
