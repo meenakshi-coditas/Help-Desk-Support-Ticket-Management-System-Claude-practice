@@ -1,9 +1,13 @@
 import { Download } from 'lucide-react';
+import { downloadAttachment } from '../../services/ticketService';
+import { useToast } from '../../context/ToastContext';
 import { PriorityBadge, StatusBadge } from '../common/Badges';
 import { formatDateTime, formatFileSize, formatTicketNumber } from '../../utils/format';
 
 /** Read-only ticket information block used on Ticket Details and Update Ticket. */
 export default function TicketSummary({ ticket }) {
+  const toast = useToast();
+  const download = (attachment) => downloadAttachment(ticket.id, attachment).catch((err) => toast.error(err.message));
   return (
     <>
       <div className="summary-head">
@@ -23,9 +27,9 @@ export default function TicketSummary({ ticket }) {
           <dt>Attachment</dt>
           <dd>
             {ticket.attachments.length === 0 ? <span className="muted">None</span> : ticket.attachments.map((a) => (
-              <span key={a.name} className="file-chip" title="Download is available once the backend is connected">
+              <button key={a.id ?? a.name} type="button" className="file-chip file-chip-btn" onClick={() => download(a)} data-testid="attachment-download">
                 <Download size={14} /> {a.name} <span className="muted small">{formatFileSize(a.size)}</span>
-              </span>
+              </button>
             ))}
           </dd>
         </div>

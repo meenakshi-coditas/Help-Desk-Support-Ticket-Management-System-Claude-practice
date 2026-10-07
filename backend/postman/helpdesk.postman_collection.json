@@ -1,0 +1,731 @@
+{
+  "info": {
+    "name": "Help Desk API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Run the folders in order. 1) Login as a user or agent (the token is stored automatically). Seed accounts: user1@helpdesk.test / User@1234, agent1@helpdesk.test / Agent@1234."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "ticketId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "1 Auth",
+      "item": [
+        {
+          "name": "Login as User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user1@helpdesk.test\",\n  \"password\": \"User@1234\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "pm.test('login ok', () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set('token', j.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as Agent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"agent1@helpdesk.test\",\n  \"password\": \"Agent@1234\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "pm.test('login ok', () => pm.response.to.have.status(200));",
+                  "pm.collectionVariables.set('token', j.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login - wrong password (401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user1@helpdesk.test\",\n  \"password\": \"wrong\"\n}"
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Current user",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2 Tickets (login as User first)",
+      "item": [
+        {
+          "name": "Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create ticket (JSON)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": \"Printer offline\",\n  \"description\": \"The office printer is offline since morning.\",\n  \"categoryId\": 4,\n  \"priority\": \"High\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('ticketId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create ticket with attachment (multipart)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets"
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "subject",
+                  "value": "Screenshot attached",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "See the attached error screenshot.",
+                  "type": "text"
+                },
+                {
+                  "key": "categoryId",
+                  "value": "4",
+                  "type": "text"
+                },
+                {
+                  "key": "priority",
+                  "value": "Medium",
+                  "type": "text"
+                },
+                {
+                  "key": "attachment",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "description": "Pick a png/jpg/pdf/txt file (max 5 MB) in the attachment row."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('ticketId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create ticket - validation errors (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": \"\",\n  \"description\": \"short\",\n  \"priority\": \"\",\n  \"categoryId\": null\n}"
+            }
+          }
+        },
+        {
+          "name": "My tickets (paged)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets?page=1&pageSize=10&sort=createdAt:desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                },
+                {
+                  "key": "sort",
+                  "value": "createdAt:desc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search / filter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets?search=login&status=Open&priority=High&categoryId=1&sort=priority:desc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "login"
+                },
+                {
+                  "key": "status",
+                  "value": "Open"
+                },
+                {
+                  "key": "priority",
+                  "value": "High"
+                },
+                {
+                  "key": "categoryId",
+                  "value": "1"
+                },
+                {
+                  "key": "sort",
+                  "value": "priority:desc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get ticket",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets",
+                "{{ticketId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Edit ticket (owner, Open only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets",
+                "{{ticketId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": \"Printer offline - updated\",\n  \"description\": \"The office printer is offline since morning.\",\n  \"categoryId\": 4,\n  \"priority\": \"High\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Download attachment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}/attachments/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets",
+                "{{ticketId}}",
+                "attachments",
+                "1"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3 Workflow (login as Agent first)",
+      "item": [
+        {
+          "name": "All tickets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets?pageSize=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets"
+              ],
+              "query": [
+                {
+                  "key": "pageSize",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Assign to me (Open -> Assigned)",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}/assign",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets",
+                "{{ticketId}}",
+                "assign"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Status -> In Progress",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets",
+                "{{ticketId}}",
+                "status"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"In Progress\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Status -> Resolved",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets",
+                "{{ticketId}}",
+                "status"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Resolved\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Status -> Closed as agent (403)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets",
+                "{{ticketId}}",
+                "status"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Closed\"\n}"
+            }
+          }
+        },
+        {
+          "name": "History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}/history",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets",
+                "{{ticketId}}",
+                "history"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4 Close (login as ticket owner)",
+      "item": [
+        {
+          "name": "Status -> Closed",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets",
+                "{{ticketId}}",
+                "status"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Closed\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Open -> Closed rejected (409): use an Open ticket id",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets",
+                "{{ticketId}}",
+                "status"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Closed\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5 Comments",
+      "item": [
+        {
+          "name": "List comments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets",
+                "{{ticketId}}",
+                "comments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}/comments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tickets",
+                "{{ticketId}}",
+                "comments"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"body\": \"Any update on this?\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6 Dashboard",
+      "item": [
+        {
+          "name": "Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

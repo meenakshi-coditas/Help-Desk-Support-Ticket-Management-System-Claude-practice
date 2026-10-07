@@ -216,3 +216,6 @@
 .auth-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; color: var(--primary); font-weight: 700; font-size: 1.1rem; }
 .demo-box { margin-top: 14px; padding: 12px 14px; background: #f8f9fb; border: 1px dashed #cfd4dc; border-radius: var(--radius-sm); }
 .demo-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+
+.file-chip-btn { border: 0; cursor: pointer; color: var(--primary); }
+.file-chip-btn:hover { background: var(--primary-soft); }
