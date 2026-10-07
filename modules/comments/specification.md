@@ -57,8 +57,8 @@ The `comments` module lets authenticated Users and Support Agents add free-text 
 | CMT-FR-04 | A User may comment only on tickets they own; a Support Agent may comment on any ticket (A-05). | REQ-040, REQ-002 |
 | CMT-FR-05 | Adding a comment to a ticket whose status is `Closed` is rejected (A-06; **Provisional**, OQ-23). Comments are allowed in Open, Assigned, In Progress and Resolved. | REQ-040, REQ-036 |
 | CMT-FR-06 | The comments of a ticket can be listed via `GET /api/tickets/{id}/comments`, subject to the same ticket-access rule as CMT-FR-04 (User: own ticket; Agent: any ticket). Listing comments of a Closed ticket is allowed (**Provisional**, OQ-23). | REQ-041 |
-| CMT-FR-07 | Comments are returned and displayed in chronological order, oldest first, tie-break by `id` ascending (**Provisional**, NEW-OQ-A). | REQ-041 |
-| CMT-FR-08 | Each listed comment exposes: comment id, author name, author role, body, creation timestamp. Author e-mail / password data are never exposed (**Provisional** field set, NEW-OQ-D). | REQ-041, REQ-060 |
+| CMT-FR-07 | Comments are returned and displayed in chronological order, oldest first, tie-break by `id` ascending (**Provisional**, OQ-33). | REQ-041 |
+| CMT-FR-08 | Each listed comment exposes: comment id, author name, author role, body, creation timestamp. Author e-mail / password data are never exposed (**Provisional** field set, OQ-36). | REQ-041, REQ-060 |
 | CMT-FR-09 | The Ticket Details screen shows a Comments section listing all comments of the ticket. | REQ-041, REQ-016 |
 | CMT-FR-10 | The Ticket Details screen shows an add-comment form (text area and submit button) when the viewer may comment; for a Closed ticket the form is not available and an informational message is shown (**Provisional**, OQ-23). | REQ-040 |
 | CMT-FR-11 | When a ticket has no comments, the Comments section shows an empty-state message (e.g. "No comments yet") instead of a blank area. | REQ-041 |
@@ -113,7 +113,7 @@ Screen: **Ticket Details** (REQ-016, REQ-070). Layout/visual design: `TBD` (`req
 | Empty state | Text such as "No comments yet" when the ticket has no comments. |
 | Add-comment form | Multi-line text area (label "Add a comment") and a submit button ("Add Comment"). Visible to a User on own non-Closed tickets and to an Agent on any non-Closed ticket. |
 | Client-side validation | Empty or whitespace-only body → inline error "Comment is required"; body over 2000 characters → inline error "Comment must not exceed 2000 characters" (server stays authoritative). Whether the text area also hard-limits typing: `TBD`. |
-| Submit behaviour | During the request the submit button is disabled to prevent duplicate submission (**Provisional**, NEW-OQ-E). On success the form is cleared and the new comment is shown without a manual page reload. On failure an error message is shown and the typed text is kept. |
+| Submit behaviour | During the request the submit button is disabled to prevent duplicate submission (**Provisional**, OQ-37). On success the form is cleared and the new comment is shown without a manual page reload. On failure an error message is shown and the typed text is kept. |
 | Closed ticket | Form hidden or disabled with message such as "This ticket is closed. New comments cannot be added." Existing comments remain visible (Provisional, OQ-23). |
 | Edit / delete | No edit or delete controls on any comment (A-06). |
 | Error handling | 401 → redirect to Login; 403/404 → "access denied / not found" page; 400 → inline error; 409 → banner with the server message; 500 → generic message. |
@@ -173,7 +173,7 @@ Error body shape example:
 | Method / path | `GET /api/tickets/{id}/comments` |
 | Request headers | `Authorization: Bearer <token>` |
 | Request body | None |
-| Query parameters | None. Pagination / limit of comments: `TBD / Requires clarification` (NEW-OQ-B); until decided the endpoint returns all comments. |
+| Query parameters | None. Pagination / limit of comments: `TBD / Requires clarification` (OQ-34); until decided the endpoint returns all comments. |
 
 Success response — `200 OK` (Provisional), oldest first:
 
@@ -196,7 +196,7 @@ Success response — `200 OK` (Provisional), oldest first:
 ]
 ```
 
-A ticket without comments returns `200 OK` with `[]` (Provisional; envelope with paging metadata TBD — NEW-OQ-B).
+A ticket without comments returns `200 OK` with `[]` (Provisional; envelope with paging metadata TBD — OQ-34).
 
 | HTTP | Condition | `error` |
 |---|---|---|
@@ -225,7 +225,7 @@ Table `comments` — columns are **Proposed** (`requirement.md` Section 11); the
 - No `updated_at` / `deleted_at` columns: comments are immutable (A-06).
 - Recommended index: (`ticket_id`, `created_at`, `id`) for ordered listing.
 - Behaviour on ticket deletion (cascade / restrict): `TBD / Requires clarification` (OQ-04).
-- Writing a comment is a single insert; it does not touch `tickets` or `ticket_history` (CMT-BR-08). Whether `tickets.updated_at` changes on a new comment: `TBD` (NEW-OQ-F).
+- Writing a comment is a single insert; it does not touch `tickets` or `ticket_history` (CMT-BR-08). Whether `tickets.updated_at` changes on a new comment: `TBD` (OQ-38).
 
 ## 11. Validation Rules
 
@@ -258,7 +258,7 @@ Table `comments` — columns are **Proposed** (`requirement.md` Section 11); the
 | ES-12 | Network failure on submit | UI | Error message; typed text retained; no duplicate created on retry unless the first request succeeded |
 | ES-13 | Edit / delete attempt | API | 404 or 405; data unchanged |
 
-New open questions proposed for `requirement.md` (not yet added): **NEW-OQ-A** ordering of comments (oldest vs newest first); **NEW-OQ-B** pagination / maximum number of comments returned; **NEW-OQ-C** whether agent-only (internal) notes are required; **NEW-OQ-D** which author fields may be exposed (e-mail?); **NEW-OQ-E** duplicate-submit protection / idempotency; **NEW-OQ-F** whether a new comment updates `tickets.updated_at`.
+New open questions proposed for `requirement.md` (not yet added): **OQ-33** ordering of comments (oldest vs newest first); **OQ-34** pagination / maximum number of comments returned; **OQ-35** whether agent-only (internal) notes are required; **OQ-36** which author fields may be exposed (e-mail?); **OQ-37** duplicate-submit protection / idempotency; **OQ-38** whether a new comment updates `tickets.updated_at`.
 
 ## 13. Security / Permission Requirements
 
@@ -270,7 +270,7 @@ New open questions proposed for `requirement.md` (not yet added): **NEW-OQ-A** o
 - Parameterised queries only; SQL metacharacters in body or path are treated as data (REQ-060, `requirement.md` Section 15).
 - Error responses never contain stack traces, SQL text or other users' data.
 - Comments are immutable; no endpoint exposes update/delete (A-06).
-- Author data returned is limited to id, name and role (Provisional — NEW-OQ-D); password data is never returned (REQ-060).
+- Author data returned is limited to id, name and role (Provisional — OQ-36); password data is never returned (REQ-060).
 
 ## 14. Dependencies
 
@@ -315,9 +315,9 @@ New open questions proposed for `requirement.md` (not yet added): **NEW-OQ-A** o
 - Body with Unicode, emoji (multi-code-unit characters), right-to-left text: length counting rule (characters vs UTF-16 units vs bytes) `TBD / Requires clarification` (OQ-01).
 - Multi-line body: line breaks preserved on display; leading/trailing blank lines trimmed.
 - Very long unbroken string (no spaces) must not break the page layout.
-- Ticket with 100+ comments: all returned and shown in order; pagination behaviour TBD (NEW-OQ-B).
+- Ticket with 100+ comments: all returned and shown in order; pagination behaviour TBD (OQ-34).
 - Two comments created at the same second: order determined by `id` (Provisional).
-- Rapid double-click on submit: one comment only (Provisional, NEW-OQ-E).
+- Rapid double-click on submit: one comment only (Provisional, OQ-37).
 - Two users commenting at the same time: both saved, no loss, each with the correct author.
 - Ticket closed by the owner while an agent has the form open: submit returns 409 and the typed text is kept.
 - Comment text identical to an existing comment: allowed (no uniqueness rule).

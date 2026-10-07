@@ -355,6 +355,26 @@ Priority: **B** = blocks accurate implementation/testing; **N** = can proceed on
 | OQ-26 | N | Confirm proposed extra endpoints (history, dashboard, categories, attachment download, logout), error format and status codes (400 vs 422, 409 vs 400 for invalid transitions). | API contract | Section 12/14 |
 | OQ-27 | N | Should a User requesting another user's ticket get 403 or 404? | Info disclosure | REQ-002 |
 | OQ-28 | N | Technology stack constraints (client says only "web application"). | `plan.md` | — |
+| OQ-29 | N | Dashboard refresh/caching: auto-refresh interval, `Cache-Control` behaviour. | Counts freshness | REQ-050 |
+| OQ-30 | N | Dashboard recent list: tie-break for equal `created_at` (provisional: higher id first) and whether Closed tickets appear. | Ordering | REQ-051 |
+| OQ-31 | N | Large-number format, subject truncation and empty-state wording on dashboards. | UI | REQ-050/051 |
+| OQ-32 | N | Dashboard URLs; what a User sees on the Agent Dashboard route (403 vs redirect). | Routing | REQ-002, REQ-052 |
+| OQ-33 | N | Comment ordering (oldest or newest first; provisional oldest first). | Comments UI | REQ-041 |
+| OQ-34 | N | Pagination / limit for comment lists. | Performance | REQ-041 |
+| OQ-35 | N | Are agent-only internal notes required? | Comment visibility | REQ-040 |
+| OQ-36 | N | Which author fields may be exposed with comments (name, role, email)? | Privacy | REQ-041 |
+| OQ-37 | N | Duplicate-submit protection for comments / tickets (idempotency). | Data quality | REQ-040, REQ-010 |
+| OQ-38 | N | Does adding a comment update `tickets.updated_at`? Is listing comments allowed on Closed tickets (provisional yes)? | Rule 6 scope | REQ-036, REQ-040 |
+| OQ-39 | B | Authentication details: behaviour for deactivated accounts (`is_active`) and token revocation; email case-insensitivity/trimming; max password length; logout revoking token server-side; concurrent sessions; client-side token storage; `/login` when already logged in; role-mismatched screen by URL; login lockout default; 405 handling. | Auth design | REQ-001/003/060 |
+| OQ-40 | N | `PUT /api/tickets/{id}`: full replace vs partial update; unknown/system fields rejected (400) or ignored? Create request content type (multipart vs JSON) and success envelope. | API contract | REQ-017, REQ-010 |
+| OQ-41 | N | Which characters count towards length limits (code points, UTF-16 units, bytes; newlines; emoji)? | Boundary tests | REQ-011 |
+| OQ-42 | N | Search scope (description? assignee?); page beyond last (empty 200 vs 400); out-of-range `pageSize` (reject vs clamp). | List behaviour | REQ-019 |
+| OQ-43 | N | After create, UI target (Details vs My Tickets); form data retention on session expiry; behaviour for existing tickets when a category is deactivated; ticket-number gaps acceptable under concurrency? | UX / data | REQ-010, REQ-020 |
+| OQ-44 | N | Error precedence when several rules fail (provisional order 401, 404, 400, 403, 409); status strings case-sensitive/trimmed; same-status no-op returns 409 or 200? | API contract | REQ-031, REQ-064 |
+| OQ-45 | B | May an Agent change status on an **unassigned** Open ticket, or only self-assign first (OQ-17 covers only tickets assigned to another agent)? | State machine | REQ-034 |
+| OQ-46 | N | Effect on tickets/history/assignee when the assigned agent or ticket owner is deactivated; is history append-only enforced at DB level; history fate on ticket deletion (OQ-04); confirmation dialog before "Close ticket"; history visibility on Closed tickets (OQ-23). | Integrity / UX | REQ-037, REQ-038, REQ-062 |
+
+OQ-14 and OQ-16 are intentionally unused (IDs are stable and never reused).
 
 **Contradictions / ambiguities noted in the client text**
 1. Section 1 lists "Change ticket status" *and* "Resolve tickets" for Agents, and Rule 5 restricts Resolved to Agents — consistent, but it is unclear whether Agents can also set `Closed` (OQ-13).
