@@ -2,6 +2,13 @@ import { ApiError, wait } from '../apiError';
 import { readDb } from './mockDb';
 
 const SESSION_KEY = 'helpdesk.session';
+let memorySession = null; // used when localStorage is unavailable (private mode, embedded frames)
+
+const store = {
+  get() { try { return localStorage.getItem(SESSION_KEY); } catch { return memorySession; } },
+  set(v) { memorySession = v; try { localStorage.setItem(SESSION_KEY, v); } catch { /* ignore */ } },
+  clear() { memorySession = null; try { localStorage.removeItem(SESSION_KEY); } catch { /* ignore */ } },
+};
 const publicUser = ({ password, ...user }) => user;
 
 // POST /api/auth/login  (A-11: email + password)
@@ -12,22 +19,18 @@ export async function login({ email, password }) {
     // Generic message on purpose (REQ-060): do not reveal which credential was wrong.
     throw new ApiError(401, 'Invalid email or password.');
   }
-  localStorage.setItem(SESSION_KEY, String(user.id));
+  store.set(String(user.id));
   return publicUser(user);
 }
 
 export function logout() {
-  localStorage.removeItem(SESSION_KEY);
+  store.clear();
 }
 
 export function getSessionUser() {
-  try {
-    const id = Number(localStorage.getItem(SESSION_KEY));
-    const user = readDb().users.find((u) => u.id === id);
-    return user ? publicUser(user) : null;
-  } catch {
-    return null;
-  }
+  const id = Number(store.get());
+  const user = readDb().users.find((u) => u.id === id);
+  return user ? publicUser(user) : null;
 }
 
 export function requireUser() {

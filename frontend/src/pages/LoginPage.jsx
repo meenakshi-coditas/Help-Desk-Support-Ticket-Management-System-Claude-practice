@@ -7,6 +7,7 @@ import Button from '../components/common/Button';
 import { useAuth } from '../context/AuthContext';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { validateLogin } from '../utils/validators';
+import { USE_MOCK } from '../services/config';
 import { SEED_PASSWORDS } from '../services/mock/mockDb';
 
 // Provisional seed accounts (OQ-08, created by backend/seed.py) – convenience for demos only; remove for production.
@@ -67,6 +68,7 @@ export default function LoginPage() {
       </form>
 
       <div className="demo-box">
+        {USE_MOCK && <p className="small muted">Demo build: runs in your browser with sample data. Nothing is sent to a server.</p>}
         <p className="small"><strong>Demo accounts</strong> (seeded data) – click to fill in:</p>
         <div className="demo-actions">
           {DEMO_ACCOUNTS.map((a) => (
