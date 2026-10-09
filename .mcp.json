@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "zephyr-squad": {
+      "command": "node",
+      "args": ["zephyr-squad-mcp/src/index.js"],
+      "env": {
+        "ZEPHYR_SQUAD_ACCESS_KEY": "${ZEPHYR_SQUAD_ACCESS_KEY}",
+        "ZEPHYR_SQUAD_SECRET_KEY": "${ZEPHYR_SQUAD_SECRET_KEY}",
+        "ZEPHYR_SQUAD_ACCOUNT_ID": "${ZEPHYR_SQUAD_ACCOUNT_ID}"
+      }
+    }
+  }
+}
